@@ -157,7 +157,7 @@ IS
 BEGIN
 	le_role := SYS_CONTEXT('entreprise_ctx', 'role_nom');
 
-	IF le_role IN ='ADMIN10_EMPLOYE' THEN
+	IF le_role ='ADMIN10_EMPLOYE' THEN
  
     	return_val := 'id_employe = SYS_CONTEXT(''entreprise_ctx'', ''id_employe'')';
 	ELSE
