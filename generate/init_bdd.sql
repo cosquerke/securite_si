@@ -157,7 +157,7 @@ IS
 BEGIN
 	le_role := SYS_CONTEXT('entreprise_ctx', 'role_nom');
 
-	IF le_role IN ('ADMIN10_EMPLOYE', 'ADMIN10_CHEF_PROJET', 'ADMIN10_CHEF_POLE') THEN
+	IF le_role ='ADMIN10_EMPLOYE' THEN
  
     	return_val := 'id_employe = SYS_CONTEXT(''entreprise_ctx'', ''id_employe'')';
 	ELSE
@@ -294,6 +294,22 @@ BEGIN
 	);
 END;
 /
+CREATE OR REPLACE VIEW employes_view AS
+SELECT
+    id_employe,
+    nom_employe,
+    id_pole,
+    CASE
+   	 WHEN SYS_CONTEXT('entreprise_ctx', 'role_nom') IN ('ADMIN10_CHEF_PROJET' ,'ADMIN10_CHEF_POLE') THEN NULL
+   	 ELSE salaire
+    END AS salaire
+FROM
+    ADMIN10.EMPLOYES;
+
+GRANT SELECT ON employes_view TO ADMIN10_EMPLOYE;
+GRANT SELECT ON employes_view TO ADMIN10_RH;
+GRANT SELECT ON employes_view TO ADMIN10_CHEF_POLE;
+GRANT SELECT ON employes_view TO ADMIN10_CHEF_PROJET;
 
 
 
