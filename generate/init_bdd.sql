@@ -41,7 +41,7 @@ INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (104, 'U
 INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (105, 'USER6', 3, 48000);
 INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (106, 'USER5', 2, 55000);
 INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (107, 'USER4', 1, 48000);
-INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (108, 'USER3', 3, 55000);
+INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (108, 'USER3', 2, 55000);
 INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (109, 'USER2', 1, 48000);
 INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (110, 'USER1', 3, 48000);
 
@@ -60,7 +60,6 @@ INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_pr
 INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1002, 'Tâche 2', 102, 'En attente', 502);
 INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1003, 'Tâche 3', 103, 'Terminée', 503);
 INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1004, 'Tâche 4', 105, 'En cours', 504);
-INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1005, 'Tâche 5', 108, 'To Do', 503);
 
 CREATE ROLE ADMIN10_CHEF_PROJET;
 CREATE ROLE ADMIN10_CHEF_POLE;
