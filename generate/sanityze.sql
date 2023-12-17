@@ -9,4 +9,4 @@ DROP TABLE poles;
 DROP TABLE employes;
 DROP TABLE projets;
 DROP TABLE taches;
-
+DROP VIEW employes_view;
