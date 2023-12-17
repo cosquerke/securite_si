@@ -61,6 +61,18 @@ INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_pr
 INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1003, 'Tâche 3', 103, 'Terminée', 503);
 INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1004, 'Tâche 4', 105, 'En cours', 504);
 
+CREATE OR REPLACE VIEW employes_view AS
+SELECT
+    id_employe,
+    nom_employe,
+    id_pole,
+    CASE
+   	 WHEN SYS_CONTEXT('entreprise_ctx', 'role_nom') IN ('ADMIN10_CHEF_PROJET' ,'ADMIN10_CHEF_POLE') THEN NULL
+   	 ELSE salaire
+    END AS salaire
+FROM
+    ADMIN10.EMPLOYES;
+
 PROMPT *** Création des rôles
 CREATE ROLE ADMIN10_CHEF_PROJET;
 CREATE ROLE ADMIN10_CHEF_POLE;
@@ -72,7 +84,7 @@ PROMPT *** Application des droits sur les tables aux rôles
 GRANT SELECT,UPDATE,DELETE, INSERT ON taches TO ADMIN10_CHEF_PROJET;
 GRANT SELECT ON poles TO ADMIN10_CHEF_PROJET;
 GRANT SELECT,UPDATE,insert ON projets  TO ADMIN10_CHEF_PROJET;
-GRANT SELECT ON employe TO ADMIN10_CHEF_PROJET;
+GRANT SELECT ON employes TO ADMIN10_CHEF_PROJET;
 GRANT SELECT ON employes_view TO ADMIN10_CHEF_PROJET;
 
 GRANT SELECT ON poles TO ADMIN10_CHEF_POLE;
@@ -105,26 +117,22 @@ CREATE OR REPLACE PACKAGE BODY set_entreprise_ctx_pkg IS
     PROCEDURE set_role IS
    	 role VARCHAR2(20);
    	 id_employe_session NUMBER;
-	 id_pole_session NUMBER;
+	   id_pole_session NUMBER;
 	BEGIN
-
 	-- Requête permettant de récupérer le rôle de l'utilisateur qui est connecté
-   	 SELECT granted_role INTO role
-   	 FROM DBA_ROLE_PRIVS
-   	 WHERE granted_role like 'ADMIN10%' AND GRANTEE=user
-   	 AND ROWNUM=1;
-
+     SELECT granted_role INTO role FROM DBA_ROLE_PRIVS WHERE granted_role LIKE 'ADMIN10%' AND GRANTEE=user AND ROWNUM=1;
+		 
      SELECT id_employe INTO id_employe_session
      FROM ADMIN10.EMPLOYES
      WHERE nom_employe=user;
 
-	 SELECT id_pole INTO id_pole_session
+	   SELECT id_pole INTO id_pole_session
      FROM ADMIN10.EMPLOYES
      WHERE nom_employe=user;
     -- Initialisation des variables de session
    	 DBMS_SESSION.SET_CONTEXT('entreprise_ctx', 'role_nom', role);
      DBMS_SESSION.SET_CONTEXT('entreprise_ctx', 'id_employe',id_employe_session);
-	 DBMS_SESSION.SET_CONTEXT('entreprise_ctx', 'id_pole',id_pole_session);
+	   DBMS_SESSION.SET_CONTEXT('entreprise_ctx', 'id_pole',id_pole_session);
     -- Si pas de données alors NULL
    	 EXCEPTION
    		 WHEN NO_DATA_FOUND THEN NULL;
@@ -286,15 +294,3 @@ BEGIN
 	);
 END;
 /
-
-CREATE OR REPLACE VIEW employes_view AS
-SELECT
-    id_employe,
-    nom_employe,
-    id_pole,
-    CASE
-   	 WHEN SYS_CONTEXT('entreprise_ctx', 'role_nom') IN ('ADMIN10_CHEF_PROJET' ,'ADMIN10_CHEF_POLE') THEN NULL
-   	 ELSE salaire
-    END AS salaire
-FROM
-    ADMIN10.EMPLOYES;
