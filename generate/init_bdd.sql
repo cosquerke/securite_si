@@ -45,7 +45,7 @@ INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (108, 'U
 INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (109, 'USER2', 1, 48000);
 INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (110, 'USER1', 3, 48000);
 
-
+PROMPT *** Peuplement des tables
 INSERT INTO poles (id_pole, nom_pole, id_employe) VALUES (1, 'Pôle Marketing', 101);
 INSERT INTO poles (id_pole, nom_pole, id_employe) VALUES (2, 'Pôle R_D', 102);
 INSERT INTO poles (id_pole, nom_pole, id_employe) VALUES (3, 'Pôle Ventes', 103);
@@ -61,37 +61,40 @@ INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_pr
 INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1003, 'Tâche 3', 103, 'Terminée', 503);
 INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1004, 'Tâche 4', 105, 'En cours', 504);
 
+PROMPT *** Création des rôles
 CREATE ROLE ADMIN10_CHEF_PROJET;
 CREATE ROLE ADMIN10_CHEF_POLE;
 CREATE ROLE ADMIN10_EMPLOYE;
 CREATE ROLE ADMIN10_RH;
 CREATE ROLE ADMIN10_ADMIN;
 
-
+PROMPT *** Application des droits sur les tables aux rôles
 GRANT SELECT,UPDATE,DELETE, INSERT ON taches TO ADMIN10_CHEF_PROJET;
 GRANT SELECT ON poles TO ADMIN10_CHEF_PROJET;
 GRANT SELECT,UPDATE,insert ON projets  TO ADMIN10_CHEF_PROJET;
-GRANT SELECT ON employes TO ADMIN10_CHEF_PROJET;
+GRANT SELECT ON employe TO ADMIN10_CHEF_PROJET;
+GRANT SELECT ON employes_view TO ADMIN10_CHEF_PROJET;
 
-
-
-GRANT SELECT,UPDATE,INSERT  ON taches TO ADMIN10_CHEF_POLE;
 GRANT SELECT ON poles TO ADMIN10_CHEF_POLE;
 GRANT SELECT ON projets  TO ADMIN10_CHEF_POLE;
+GRANT SELECT ON employes_view TO ADMIN10_CHEF_POLE;
 GRANT SELECT ON employes TO ADMIN10_CHEF_POLE;
-
 
 GRANT SELECT,UPDATE ON taches TO ADMIN10_EMPLOYE;
 GRANT SELECT ON poles TO  ADMIN10_EMPLOYE;
 GRANT SELECT  ON projets  TO ADMIN10_EMPLOYE;
+GRANT SELECT ON employes_view TO ADMIN10_EMPLOYE;
 GRANT SELECT ON employes TO ADMIN10_EMPLOYE;
 
 GRANT SELECT,UPDATE,INSERT ON employes TO ADMIN10_RH;
 GRANT SELECT ON poles TO ADMIN10_RH;
 GRANT SELECT ON projets TO ADMIN10_RH;
+GRANT SELECT ON employes_view TO ADMIN10_RH;
+GRANT SELECT ON employes TO ADMIN10_RH;
 
 GRANT SELECT,UPDATE, INSERT, DELETE ON poles TO ADMIN10_ADMIN;
 
+PROMPT *** Création du package et du contexte global
 CREATE OR REPLACE CONTEXT entreprise_ctx USING set_entreprise_ctx_pkg;
 CREATE OR REPLACE PACKAGE set_entreprise_ctx_pkg IS
     PROCEDURE set_role;
@@ -131,8 +134,7 @@ END set_entreprise_ctx_pkg;
 /
 SHOW ERROR;
 
-
-
+PROMPT *** Application des droits d execution du package aux rôles
 GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN10_CHEF_PROJET;
 GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN10_CHEF_POLE;
 GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN10_EMPLOYE;
@@ -146,6 +148,7 @@ GRANT ADMIN10_CHEF_POLE to USER3, USER4;
 GRANT ADMIN10_RH to USER5;
 GRANT ADMIN10_EMPLOYE to USER6, USER7
 
+PROMPT *** Création des VPDs
 CREATE OR REPLACE FUNCTION VPD_EMPLOYES(
 	SCHEMA_VAR IN VARCHAR2,
 	TABLE_VAR IN VARCHAR2)
@@ -178,13 +181,6 @@ BEGIN
     );
 END;
 /
-
-EXECUTE admin10.set_entreprise_ctx_pkg.set_role;
-SELECT sys_context('entreprise_ctx','role_nom') FROM DUAL;
-
-SELECT sys_context('entreprise_ctx','id_employe') FROM DUAL;
-
-
 
 CREATE OR REPLACE FUNCTION VPD_POLE(
 	SCHEMA_VAR IN VARCHAR2,
@@ -231,8 +227,6 @@ IS
 BEGIN
 	-- Récupération du rôle de l'utilisateur connecté depuis le contexte
    le_role := SYS_CONTEXT('entreprise_ctx', 'role_nom');
-
-
 	-- Filtrage des tâches en fonction du rôle de l'utilisateur
 	IF le_role  = 'ADMIN10_CHEF_PROJET' THEN
     	return_val := 'id_projet IN (SELECT id_projet FROM projets WHERE id_chef_de_projet = SYS_CONTEXT(''entreprise_ctx'', ''id_employe''))';
@@ -245,7 +239,6 @@ BEGIN
 	RETURN return_val ;
 END VPD_TACHES;
 /
-
 
 -- Activer la politique de sécurité VPD pour la table TACHES
 BEGIN
@@ -305,8 +298,3 @@ SELECT
     END AS salaire
 FROM
     ADMIN10.EMPLOYES;
-
-GRANT SELECT ON employes_view TO ADMIN10_EMPLOYE;
-GRANT SELECT ON employes_view TO ADMIN10_RH;
-GRANT SELECT ON employes_view TO ADMIN10_CHEF_POLE;
-GRANT SELECT ON employes_view TO ADMIN10_CHEF_PROJET;
