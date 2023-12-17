@@ -36,7 +36,7 @@ ALTER TABLE taches ADD CONSTRAINT fk_taches_id_responsable_tache FOREIGN KEY (id
 
 INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (101, 'Jean Dupont', 1, 50000);
 INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (102, 'Alice Tremblay', 2, 55000);
-INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (103, 'Éric Leclerc', 3, 48000);    
+INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (103, 'Éric Leclerc', 3, 48000);
 INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (104, 'USER7', 2, 55000);
 INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (105, 'USER6', 3, 48000);
 INSERT INTO employes (id_employe, nom_employe, id_pole, salaire) VALUES (106, 'USER5', 2, 55000);
@@ -56,10 +56,10 @@ INSERT INTO projets (id_projet, nom_projet, id_chef_de_projet, id_pole) VALUES (
 INSERT INTO projets (id_projet, nom_projet, id_chef_de_projet, id_pole) VALUES (503, 'Projet C', '103', 3);
 INSERT INTO projets (id_projet, nom_projet, id_chef_de_projet, id_pole) VALUES (504, 'Projet D', '109', 3);
 
-INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1004, 'Tâche 4', 105, 'En cours', 504);
 INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1001, 'Tâche 1', 101, 'En cours', 501);
 INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1002, 'Tâche 2', 102, 'En attente', 502);
 INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1003, 'Tâche 3', 103, 'Terminée', 503);
+INSERT INTO taches (id_tache, nom_tache, id_responsable_tache, etat_tache, id_projet) VALUES (1004, 'Tâche 4', 105, 'En cours', 504);
 
 CREATE ROLE ADMIN10_CHEF_PROJET;
 CREATE ROLE ADMIN10_CHEF_POLE;
@@ -110,11 +110,11 @@ CREATE OR REPLACE PACKAGE BODY set_entreprise_ctx_pkg IS
    	 FROM DBA_ROLE_PRIVS
    	 WHERE granted_role like 'ADMIN10%' AND GRANTEE=user
    	 AND ROWNUM=1;
-	 
+
      SELECT id_employe INTO id_employe_session
      FROM ADMIN10.EMPLOYES
      WHERE nom_employe=user;
-	 
+
 	 SELECT id_pole INTO id_pole_session
      FROM ADMIN10.EMPLOYES
      WHERE nom_employe=user;
@@ -158,7 +158,6 @@ BEGIN
 	le_role := SYS_CONTEXT('entreprise_ctx', 'role_nom');
 
 	IF le_role ='ADMIN10_EMPLOYE' THEN
- 
     	return_val := 'id_employe = SYS_CONTEXT(''entreprise_ctx'', ''id_employe'')';
 	ELSE
     	return_val := '1=1';
@@ -199,7 +198,7 @@ BEGIN
 	le_role := SYS_CONTEXT('entreprise_ctx', 'role_nom');
 
 	IF le_role IN ('ADMIN10_EMPLOYE', 'ADMIN10_CHEF_PROJET', 'ADMIN10_CHEF_POLE') THEN
- 
+
     	return_val := 'id_pole = SYS_CONTEXT(''entreprise_ctx'', ''id_pole'')';
 	ELSE
     	return_val := '1=1';
@@ -246,12 +245,12 @@ BEGIN
 	RETURN return_val ;
 END VPD_TACHES;
 /
-    
+
 
 -- Activer la politique de sécurité VPD pour la table TACHES
 BEGIN
 	DBMS_RLS.ADD_POLICY(
-    	OBJECT_SCHEMA	=> 'ADMIN10',    	 
+    	OBJECT_SCHEMA	=> 'ADMIN10',
   	OBJECT_NAME 	=> 'TACHES',
     	POLICY_NAME 	=> 'TACHES_POLICY',
     	FUNCTION_SCHEMA  =>'ADMIN10',
@@ -294,6 +293,7 @@ BEGIN
 	);
 END;
 /
+
 CREATE OR REPLACE VIEW employes_view AS
 SELECT
     id_employe,
@@ -310,6 +310,3 @@ GRANT SELECT ON employes_view TO ADMIN10_EMPLOYE;
 GRANT SELECT ON employes_view TO ADMIN10_RH;
 GRANT SELECT ON employes_view TO ADMIN10_CHEF_POLE;
 GRANT SELECT ON employes_view TO ADMIN10_CHEF_PROJET;
-
-
-
