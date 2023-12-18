@@ -1,14 +1,14 @@
 CONNECT USER5/user@cienetdb;
-EXECUTE admin10.set_entreprise_ctx_pkg.set_role;
+EXECUTE admin12.set_entreprise_ctx_pkg.set_role;
 
-SELECT * FROM admin10.TACHES;
+SELECT * FROM admin12.TACHES;
 
-SELECT * FROM admin10.POLES;
+SELECT * FROM admin12.POLES;
 
-SELECT * FROM admin10.PROJETS;
+SELECT * FROM admin12.PROJETS;
 
-SELECT * FROM admin10.EMPLOYES;
-UPDATE admin10.employes SET salaire = 50000;
-INSERT INTO admin10.employes (id_employe, nom_employe, id_pole, salaire) VALUES (111, 'USER100', 3, 100000);
-SELECT * FROM admin10.EMPLOYES;
-DELETE FROM admin10.employes WHERE id_employe = 111;
+SELECT * FROM admin12.EMPLOYES;
+UPDATE admin12.employes SET salaire = 55000;
+INSERT INTO admin12.employes (id_employe, nom_employe, id_pole, salaire) VALUES (111, 'USER100', 3, 100000);
+SELECT * FROM admin12.EMPLOYES;
+DELETE FROM admin12.employes WHERE id_employe = 111;
