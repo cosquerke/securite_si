@@ -67,44 +67,44 @@ SELECT
     nom_employe,
     id_pole,
     CASE
-   	 WHEN SYS_CONTEXT('entreprise_ctx', 'role_nom') IN ('ADMIN10_CHEF_PROJET' ,'ADMIN10_CHEF_POLE') THEN NULL
+   	 WHEN SYS_CONTEXT('entreprise_ctx', 'role_nom') IN ('ADMIN12_CHEF_PROJET' ,'ADMIN12_CHEF_POLE') THEN NULL
    	 ELSE salaire
     END AS salaire
 FROM
-    ADMIN10.EMPLOYES;
+    ADMIN12.EMPLOYES;
 
 PROMPT *** Création des rôles
-CREATE ROLE ADMIN10_CHEF_PROJET;
-CREATE ROLE ADMIN10_CHEF_POLE;
-CREATE ROLE ADMIN10_EMPLOYE;
-CREATE ROLE ADMIN10_RH;
-CREATE ROLE ADMIN10_ADMIN;
+CREATE ROLE ADMIN12_CHEF_PROJET;
+CREATE ROLE ADMIN12_CHEF_POLE;
+CREATE ROLE ADMIN12_EMPLOYE;
+CREATE ROLE ADMIN12_RH;
+CREATE ROLE ADMIN12_ADMIN;
 
 PROMPT *** Application des droits sur les tables aux rôles
-GRANT SELECT,UPDATE,DELETE, INSERT ON taches TO ADMIN10_CHEF_PROJET;
-GRANT SELECT ON poles TO ADMIN10_CHEF_PROJET;
-GRANT SELECT,UPDATE,insert,DELETE ON projets  TO ADMIN10_CHEF_PROJET;
-GRANT SELECT ON employes TO ADMIN10_CHEF_PROJET;
-GRANT SELECT ON employes_view TO ADMIN10_CHEF_PROJET;
+GRANT SELECT,UPDATE,DELETE, INSERT ON taches TO ADMIN12_CHEF_PROJET;
+GRANT SELECT ON poles TO ADMIN12_CHEF_PROJET;
+GRANT SELECT,UPDATE,insert,DELETE ON projets  TO ADMIN12_CHEF_PROJET;
+GRANT SELECT ON employes TO ADMIN12_CHEF_PROJET;
+GRANT SELECT ON employes_view TO ADMIN12_CHEF_PROJET;
 
-GRANT SELECT ON poles TO ADMIN10_CHEF_POLE;
-GRANT SELECT ON projets  TO ADMIN10_CHEF_POLE;
-GRANT SELECT ON employes_view TO ADMIN10_CHEF_POLE;
-GRANT SELECT ON employes TO ADMIN10_CHEF_POLE;
+GRANT SELECT ON poles TO ADMIN12_CHEF_POLE;
+GRANT SELECT ON projets  TO ADMIN12_CHEF_POLE;
+GRANT SELECT ON employes_view TO ADMIN12_CHEF_POLE;
+GRANT SELECT ON employes TO ADMIN12_CHEF_POLE;
 
-GRANT SELECT,UPDATE ON taches TO ADMIN10_EMPLOYE;
-GRANT SELECT ON poles TO  ADMIN10_EMPLOYE;
-GRANT SELECT  ON projets  TO ADMIN10_EMPLOYE;
-GRANT SELECT ON employes_view TO ADMIN10_EMPLOYE;
-GRANT SELECT ON employes TO ADMIN10_EMPLOYE;
+GRANT SELECT,UPDATE ON taches TO ADMIN12_EMPLOYE;
+GRANT SELECT ON poles TO  ADMIN12_EMPLOYE;
+GRANT SELECT  ON projets  TO ADMIN12_EMPLOYE;
+GRANT SELECT ON employes_view TO ADMIN12_EMPLOYE;
+GRANT SELECT ON employes TO ADMIN12_EMPLOYE;
 
-GRANT SELECT,UPDATE,INSERT,DELETE ON employes TO ADMIN10_RH;
-GRANT SELECT ON poles TO ADMIN10_RH;
-GRANT SELECT ON projets TO ADMIN10_RH;
-GRANT SELECT ON employes_view TO ADMIN10_RH;
-GRANT SELECT ON employes TO ADMIN10_RH;
+GRANT SELECT,UPDATE,INSERT,DELETE ON employes TO ADMIN12_RH;
+GRANT SELECT ON poles TO ADMIN12_RH;
+GRANT SELECT ON projets TO ADMIN12_RH;
+GRANT SELECT ON employes_view TO ADMIN12_RH;
+GRANT SELECT ON employes TO ADMIN12_RH;
 
-GRANT SELECT,UPDATE, INSERT, DELETE ON poles TO ADMIN10_ADMIN;
+GRANT SELECT,UPDATE, INSERT, DELETE ON poles TO ADMIN12_ADMIN;
 
 PROMPT *** Création du package et du contexte global
 CREATE OR REPLACE CONTEXT entreprise_ctx USING set_entreprise_ctx_pkg;
@@ -120,14 +120,14 @@ CREATE OR REPLACE PACKAGE BODY set_entreprise_ctx_pkg IS
 	   id_pole_session NUMBER;
 	BEGIN
 	-- Requête permettant de récupérer le rôle de l'utilisateur qui est connecté
-     SELECT granted_role INTO role FROM DBA_ROLE_PRIVS WHERE granted_role LIKE 'ADMIN10%' AND GRANTEE=user AND ROWNUM=1;
+     SELECT granted_role INTO role FROM DBA_ROLE_PRIVS WHERE granted_role LIKE 'ADMIN12%' AND GRANTEE=user AND ROWNUM=1;
 		 
      SELECT id_employe INTO id_employe_session
-     FROM ADMIN10.EMPLOYES
+     FROM ADMIN12.EMPLOYES
      WHERE nom_employe=user;
 
 	   SELECT id_pole INTO id_pole_session
-     FROM ADMIN10.EMPLOYES
+     FROM ADMIN12.EMPLOYES
      WHERE nom_employe=user;
     -- Initialisation des variables de session
    	 DBMS_SESSION.SET_CONTEXT('entreprise_ctx', 'role_nom', role);
@@ -143,18 +143,18 @@ END set_entreprise_ctx_pkg;
 SHOW ERROR;
 
 PROMPT *** Application des droits d execution du package aux rôles
-GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN10_CHEF_PROJET;
-GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN10_CHEF_POLE;
-GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN10_EMPLOYE;
-GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN10_RH;
-GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN10_ADMIN;
+GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN12_CHEF_PROJET;
+GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN12_CHEF_POLE;
+GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN12_EMPLOYE;
+GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN12_RH;
+GRANT EXECUTE ON set_entreprise_ctx_pkg to ADMIN12_ADMIN;
 
 PROMPT *** Attribution des droits aux utilisateurs
-GRANT ADMIN10_ADMIN to USER1;
-GRANT ADMIN10_CHEF_PROJET to USER2;
-GRANT ADMIN10_CHEF_POLE to USER3, USER4;
-GRANT ADMIN10_RH to USER5;
-GRANT ADMIN10_EMPLOYE to USER6, USER7;
+GRANT ADMIN12_ADMIN to USER1;
+GRANT ADMIN12_CHEF_PROJET to USER2;
+GRANT ADMIN12_CHEF_POLE to USER3, USER4;
+GRANT ADMIN12_RH to USER5;
+GRANT ADMIN12_EMPLOYE to USER6, USER7;
 
 PROMPT *** Création des VPDs
 CREATE OR REPLACE FUNCTION VPD_EMPLOYES(
@@ -168,7 +168,7 @@ IS
 BEGIN
 	le_role := SYS_CONTEXT('entreprise_ctx', 'role_nom');
 
-	IF le_role ='ADMIN10_EMPLOYE' THEN
+	IF le_role ='ADMIN12_EMPLOYE' THEN
     	return_val := 'id_employe = SYS_CONTEXT(''entreprise_ctx'', ''id_employe'')';
 	ELSE
     	return_val := '1=1';
@@ -180,10 +180,10 @@ END VPD_EMPLOYES;
 
 BEGIN
     DBMS_RLS.ADD_POLICY (
-   	 OBJECT_SCHEMA => 'ADMIN10',
+   	 OBJECT_SCHEMA => 'ADMIN12',
    	 OBJECT_NAME => 'EMPLOYES',
    	 POLICY_NAME => 'EMPLOYES_POLICY',
-   	 FUNCTION_SCHEMA => 'ADMIN10',
+   	 FUNCTION_SCHEMA => 'ADMIN12',
    	 POLICY_FUNCTION => 'VPD_EMPLOYES',
    	 STATEMENT_TYPES => 'SELECT'
     );
@@ -201,7 +201,7 @@ IS
 BEGIN
 	le_role := SYS_CONTEXT('entreprise_ctx', 'role_nom');
 
-	IF le_role IN ('ADMIN10_EMPLOYE', 'ADMIN10_CHEF_PROJET', 'ADMIN10_CHEF_POLE') THEN
+	IF le_role IN ('ADMIN12_EMPLOYE', 'ADMIN12_CHEF_PROJET', 'ADMIN12_CHEF_POLE') THEN
 
     	return_val := 'id_pole = SYS_CONTEXT(''entreprise_ctx'', ''id_pole'')';
 	ELSE
@@ -214,10 +214,10 @@ END VPD_POLE;
 
 BEGIN
     DBMS_RLS.ADD_POLICY (
-   	 OBJECT_SCHEMA => 'ADMIN10',
+   	 OBJECT_SCHEMA => 'ADMIN12',
    	 OBJECT_NAME => 'POLES',
    	 POLICY_NAME => 'POLES_POLICY',
-   	 FUNCTION_SCHEMA => 'ADMIN10',
+   	 FUNCTION_SCHEMA => 'ADMIN12',
    	 POLICY_FUNCTION => 'VPD_POLE',
    	 STATEMENT_TYPES => 'SELECT'
     );
@@ -236,9 +236,9 @@ BEGIN
 	-- Récupération du rôle de l'utilisateur connecté depuis le contexte
    le_role := SYS_CONTEXT('entreprise_ctx', 'role_nom');
 	-- Filtrage des tâches en fonction du rôle de l'utilisateur
-	IF le_role  = 'ADMIN10_CHEF_PROJET' THEN
+	IF le_role  = 'ADMIN12_CHEF_PROJET' THEN
     	return_val := 'id_projet IN (SELECT id_projet FROM projets WHERE id_chef_de_projet = SYS_CONTEXT(''entreprise_ctx'', ''id_employe''))';
-	ELSIF le_role  = 'ADMIN10_EMPLOYE' THEN
+	ELSIF le_role  = 'ADMIN12_EMPLOYE' THEN
     	return_val := 'id_responsable_tache = SYS_CONTEXT(''entreprise_ctx'', ''id_employe'')';
 	ELSE
     	return_val := '1=1';
@@ -251,10 +251,10 @@ END VPD_TACHES;
 -- Activer la politique de sécurité VPD pour la table TACHES
 BEGIN
 	DBMS_RLS.ADD_POLICY(
-    	OBJECT_SCHEMA	=> 'ADMIN10',
+    	OBJECT_SCHEMA	=> 'ADMIN12',
   	OBJECT_NAME 	=> 'TACHES',
     	POLICY_NAME 	=> 'TACHES_POLICY',
-    	FUNCTION_SCHEMA  =>'ADMIN10',
+    	FUNCTION_SCHEMA  =>'ADMIN12',
     	POLICY_FUNCTION  => 'VPD_TACHES',
     	STATEMENT_TYPES  => 'SELECT, UPDATE, DELETE'
 	);
@@ -272,9 +272,9 @@ IS
 BEGIN
     le_role := SYS_CONTEXT('entreprise_ctx', 'role_nom');
 
-    IF le_role = 'ADMIN10_CHEF_PROJET'
+    IF le_role = 'ADMIN12_CHEF_PROJET'
     	THEN return_val := 'id_chef_de_projet = SYS_CONTEXT(''entreprise_ctx'', ''id_employe'')';
-	ELSIF le_role = 'ADMIN10_CHEF_POLE'
+	ELSIF le_role = 'ADMIN12_CHEF_POLE'
     	THEN return_val := 'id_pole = SYS_CONTEXT(''entreprise_ctx'', ''id_pole'')';
 	ELSE return_val := '1=1';
     END IF;
@@ -285,10 +285,10 @@ END VPD_PROJET;
 
 BEGIN
 	DBMS_RLS.ADD_POLICY (
-  	  OBJECT_SCHEMA => 'ADMIN10',
+  	  OBJECT_SCHEMA => 'ADMIN12',
   	  OBJECT_NAME => 'PROJETS',
   	  POLICY_NAME => 'PROJET_POLICY',
-  	  FUNCTION_SCHEMA => 'ADMIN10',
+  	  FUNCTION_SCHEMA => 'ADMIN12',
   	  POLICY_FUNCTION => 'VPD_PROJET',
   	  STATEMENT_TYPES => 'SELECT, UPDATE'
 	);
