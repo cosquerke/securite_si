@@ -1,6 +1,8 @@
+SET ECHO ON;
+SET linesize 250;
 CONNECT USER2/user@cienetdb;
 EXECUTE admin12.set_entreprise_ctx_pkg.set_role;
-
+SELECT sys_context('entreprise_ctx', 'role_nom') FROM DUAL;
 SELECT * FROM admin12.POLES;
 
 SELECT * FROM admin12.employes_view;
@@ -19,3 +21,5 @@ DELETE FROM admin12.TACHES WHERE id_tache = 1005;
 SELECT * FROM admin12.TACHES;
 
 DELETE FROM admin12.projets WHERE id_projet = 505;
+UPDATE admin12.taches SET nom_tache = 'Tache 4' WHERE id_tache = 1004;
+UPDATE admin12.projets SET nom_projet = 'Projet D' WHERE id_projet = 504;

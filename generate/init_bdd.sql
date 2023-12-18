@@ -84,24 +84,20 @@ PROMPT *** Application des droits sur les tables aux rôles
 GRANT SELECT,UPDATE,DELETE, INSERT ON taches TO ADMIN12_CHEF_PROJET;
 GRANT SELECT ON poles TO ADMIN12_CHEF_PROJET;
 GRANT SELECT,UPDATE,insert,DELETE ON projets  TO ADMIN12_CHEF_PROJET;
-GRANT SELECT ON employes TO ADMIN12_CHEF_PROJET;
 GRANT SELECT ON employes_view TO ADMIN12_CHEF_PROJET;
 
 GRANT SELECT ON poles TO ADMIN12_CHEF_POLE;
 GRANT SELECT ON projets  TO ADMIN12_CHEF_POLE;
 GRANT SELECT ON employes_view TO ADMIN12_CHEF_POLE;
-GRANT SELECT ON employes TO ADMIN12_CHEF_POLE;
 
 GRANT SELECT,UPDATE ON taches TO ADMIN12_EMPLOYE;
 GRANT SELECT ON poles TO  ADMIN12_EMPLOYE;
 GRANT SELECT  ON projets  TO ADMIN12_EMPLOYE;
 GRANT SELECT ON employes_view TO ADMIN12_EMPLOYE;
-GRANT SELECT ON employes TO ADMIN12_EMPLOYE;
 
 GRANT SELECT,UPDATE,INSERT,DELETE ON employes TO ADMIN12_RH;
 GRANT SELECT ON poles TO ADMIN12_RH;
 GRANT SELECT ON projets TO ADMIN12_RH;
-GRANT SELECT ON employes_view TO ADMIN12_RH;
 GRANT SELECT ON employes TO ADMIN12_RH;
 
 GRANT SELECT,UPDATE, INSERT, DELETE ON poles TO ADMIN12_ADMIN;
@@ -237,7 +233,7 @@ BEGIN
    le_role := SYS_CONTEXT('entreprise_ctx', 'role_nom');
 	-- Filtrage des tâches en fonction du rôle de l'utilisateur
 	IF le_role  = 'ADMIN12_CHEF_PROJET' THEN
-    	return_val := 'id_projet IN (SELECT id_projet FROM projets WHERE id_chef_de_projet = SYS_CONTEXT(''entreprise_ctx'', ''id_employe''))';
+    	return_val := 'id_projet IN (SELECT id_projet FROM projets)';
 	ELSIF le_role  = 'ADMIN12_EMPLOYE' THEN
     	return_val := 'id_responsable_tache = SYS_CONTEXT(''entreprise_ctx'', ''id_employe'')';
 	ELSE
